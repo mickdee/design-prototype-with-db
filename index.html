@@ -1,0 +1,70 @@
+<html>
+  <head>
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
+  </head>
+    <div id="tasks"></div>
+    <div>
+      <input type="text" placeholder="Add a Task" id="newTask">
+    </div>
+    <button id="addTaskButton">Add Task</button>
+  <script src="https://cdn.firebase.com/js/client/2.4.2/firebase.js"></script>
+  <script>
+
+      // Initialize Firebase
+    var myFirebaseRef = new Firebase("https://fir-firebase-52904.firebaseio.com");
+
+    myFirebaseRef.child("tasks").on("value", function(snapshot) {
+      console.log("you just called the big fat callback function");
+      var allTasks = snapshot.val();
+
+      document.getElementById("tasks").innerHTML = null;
+      
+      Object.keys(allTasks).forEach(function(taskKey){
+        var taskData = allTasks[taskKey];
+      
+        var newDiv = document.createElement("div");
+        newDiv.setAttribute("data-task-key", taskKey);
+        newDiv.innerHTML = taskData.task + ' ' + '<a href="#" class="delete-task"><i class="fa fa-trash"></i></a>';
+        document.getElementById("tasks").appendChild(newDiv);
+      })
+
+      var deleteTaskLinks = document.getElementsByClassName("delete-task");
+      for (var i=0; i<deleteTaskLinks.length; i++){
+        deleteTaskLinks[i].addEventListener('click', function (){
+          var key = this.parentElement.getAttribute("data-task-key");
+          var taskReference = myFirebaseTaskListRef.child(key);
+          taskReference.remove();
+        });  
+      }
+
+
+    });
+    
+    // when you click on delete-task
+    // console.log to display value of task; and the key
+    // delete an item based on the key
+
+    // write to database
+    var myFirebaseTaskListRef = new Firebase("https://fir-firebase-52904.firebaseio.com/tasks");
+    
+    var inputElement = document.getElementById("newTask");
+
+    document.getElementById('addTaskButton').addEventListener('click', function(){
+      var newTaskValue = inputElement.value;
+      var newTask = {
+        task: newTaskValue,
+        status: "incomplete"
+      };
+      addTask(newTask);
+      inputElement.value = "";
+    });
+
+    var addTask = function (task) {
+      myFirebaseTaskListRef.push(task);
+    };
+
+  </script>
+
+
+  </body>
+</html>
