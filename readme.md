@@ -1,6 +1,10 @@
 #Design Prototypes with a Real Database
 This template enables you to quickly spin up a new application that is powered by a real database. This allows you to not only separate data from your design, but also gives you persistent data with which you can create multi-screen prototypes and workflows.
 
+### Notes
+- This prototype does not have database authentication, which means that anyone with access to your firebase_URL can read and write to your entire database. Probably fine for prototyping purposes, but be wary of using sensitive data.
+- This prototype has basic authentication via Staticfile.auth. The default user/password is admin/admin. To generate your own encrypted password, use http://www.htaccesstools.com/htpasswd-generator
+
 ##Steps to Reproduce
 + Open terminal
 + Clone or download repo to your local machine
