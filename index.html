@@ -11,7 +11,7 @@
   <script>
 
       // Initialize Firebase
-    var myFirebaseRef = new Firebase("https://fir-firebase-52904.firebaseio.com");
+    var myFirebaseRef = new Firebase("firebase_URL"); // Replace firebase_URL with your own firebase_URL
 
     myFirebaseRef.child("tasks").on("value", function(snapshot) {
       console.log("you just called the big fat callback function");
@@ -39,13 +39,9 @@
 
 
     });
-    
-    // when you click on delete-task
-    // console.log to display value of task; and the key
-    // delete an item based on the key
 
     // write to database
-    var myFirebaseTaskListRef = new Firebase("https://fir-firebase-52904.firebaseio.com/tasks");
+    var myFirebaseTaskListRef = new Firebase("firebase_URL/tasks"); // Replace firebase_URL with your own firebase_URL and keep /tasks at the end of the URL
     
     var inputElement = document.getElementById("newTask");
 
