@@ -1,66 +1,137 @@
 <html>
   <head>
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
+    <style>
+    .complete {
+      text-decoration: line-through;
+    }
+    </style>
   </head>
-    <div id="tasks"></div>
     <div>
       <input type="text" placeholder="Add a Task" id="newTask">
     </div>
     <button id="addTaskButton">Add Task</button>
+    <div id="content">
+    </div>
+
+<!-- <br><br>
+<form id="payment">
+  <h3>Form</h3>
+<label for="name">Name</label>
+<input type="text" id="name">
+
+<label for="addresse">Address</label>
+<input type="text" id="address">
+
+<button type="submit" id="saveform">Save</button>
+
+<h3>Saved Info</h3>
+<div id="saved"></div> -->
+
+</form>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
   <script src="https://cdn.firebase.com/js/client/2.4.2/firebase.js"></script>
   <script>
 
       // Initialize Firebase
-    var myFirebaseRef = new Firebase("firebase_URL"); // Replace firebase_URL with your own firebase_URL
+    var myFirebaseRef = new Firebase("https://prototype1-116a4.firebaseio.com/"); // Replace firebase_URL with your own firebase_URL
 
     myFirebaseRef.child("tasks").on("value", function(snapshot) {
-      console.log("you just called the big fat callback function");
       var allTasks = snapshot.val();
+      // reset
+      $("#content").html("");
 
-      document.getElementById("tasks").innerHTML = null;
-      
-      Object.keys(allTasks).forEach(function(taskKey){
-        var taskData = allTasks[taskKey];
-      
-        var newDiv = document.createElement("div");
-        newDiv.setAttribute("data-task-key", taskKey);
-        newDiv.innerHTML = taskData.task + ' ' + '<a href="#" class="delete-task"><i class="fa fa-trash"></i></a>';
-        document.getElementById("tasks").appendChild(newDiv);
-      })
+      $.each(allTasks, function(key, value) {
+        var taskData = allTasks[key];
+        var div = $("<div></div>");
+        var status = '';
+        $("#content").append(div);
+        div.attr("data-task-key", key);
+        div.attr("class", taskData.status);
+        if (taskData.status === 'complete') {
+            status = 'checked';
+        }
+        div.html(function() {
+          return '<input type="checkbox" class="change-status"' + status + '>' + taskData.task + ' ' + '<a href="#" class="delete-task"><i class="fa fa-trash"></i></a>';
+        });
 
-      var deleteTaskLinks = document.getElementsByClassName("delete-task");
-      for (var i=0; i<deleteTaskLinks.length; i++){
+      });
+
+      var changeStatus = $(".change-status");
+      $.each(changeStatus, function(key, value) {
+        var checkbox = value;
+        $(checkbox).change(function() {
+          var key = $(checkbox).parent().attr("data-task-key");
+          var taskReference = myFirebaseTaskListRef.child(key);
+          var statusName = 'incomplete';
+          if(this.checked) {
+            statusName = 'complete'
+          }
+          taskReference.update({
+            "status": statusName
+          });
+        });
+      });
+
+      var deleteTaskLinks = $(".delete-task");
+      for (var i=0; i<deleteTaskLinks.length; i++) {
         deleteTaskLinks[i].addEventListener('click', function (){
-          var key = this.parentElement.getAttribute("data-task-key");
+          var key = $(this).parent().attr("data-task-key");
           var taskReference = myFirebaseTaskListRef.child(key);
           taskReference.remove();
-        });  
+        });
       }
-
 
     });
 
     // write to database
-    var myFirebaseTaskListRef = new Firebase("firebase_URL/tasks"); // Replace firebase_URL with your own firebase_URL and keep /tasks at the end of the URL
-    
-    var inputElement = document.getElementById("newTask");
+    var myFirebaseTaskListRef = new Firebase("https://prototype1-116a4.firebaseio.com/tasks"); // Replace firebase_URL with your own firebase_URL and keep /tasks at the end of the URL
 
-    document.getElementById('addTaskButton').addEventListener('click', function(){
-      var newTaskValue = inputElement.value;
+    var inputElement = $("#newTask");
+
+    $('#addTaskButton').on('click', function() {
+      var newTaskValue = inputElement.val();
       var newTask = {
         task: newTaskValue,
         status: "incomplete"
       };
       addTask(newTask);
-      inputElement.value = "";
+      inputElement.val("");
     });
 
     var addTask = function (task) {
       myFirebaseTaskListRef.push(task);
     };
 
+
+
+    $(document).ready(function() {
+
+      // $("#saveform").on("click", function() {
+      //   console.log("i was clicked");
+      //   var address = $('#address');
+      //   var addressVal = address.val();
+      //   var newField = {
+      //     id: address.attr('id'),
+      //     field: addressVal,
+      //     status: "thing"
+      //   };
+      //   myFirebaseTaskListRef.push(newField);
+      // });
+
+      // myFirebaseRef.child("tasks").on("value", function(snapshot) {
+      //   var allTasks = snapshot.val();
+
+      //   $.each( allTasks, function( key, value ){
+      //     if (typeof value.field !== 'undefined') {
+      //         console.log('field',value.field);
+      //         $("#saved").text(value.field)
+      //       }
+      //   });
+      // });
+
+    });
   </script>
-
-
   </body>
 </html>
