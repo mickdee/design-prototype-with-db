@@ -1,0 +1,112 @@
+<html>
+  <head>
+    <!-- Font Awesome -->
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
+    <!-- jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <!-- Custom Styles -->
+    <style>
+      .complete {
+        background-color: #DFF0D8;
+      }
+      .inline-block {
+        display: inline-block;
+      }
+    </style>
+  </head>
+  <body>
+
+    <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-offset-4 col-md-4">
+            <div class="panel panel-default" style="margin-top:40px;">
+              
+              <form id="payment">
+                <h3>Form</h3>
+                <div>
+                  <label for="addresse">Address</label>
+                  <input type="text" id="address">
+                </div>
+                <button type="submit" id="saveform">Save</button>
+                <h3>Saved Info</h3>
+                <div id="saved"></div>
+              </form>
+              
+            </div>
+          </div>
+        </div>
+      </div>
+
+  <script src="https://cdn.firebase.com/js/client/2.4.2/firebase.js"></script>
+  <script>
+    // Initialize Firebase
+    var myFirebaseRef = new Firebase("https://tasklist-af065.firebaseio.com/"); // Replace firebase_URL your own
+    
+    // write to database
+    var myFirebaseTaskListRef = new Firebase("https://tasklist-af065.firebaseio.com/form"); // Replace firebase_URL with your own and keep /tasks at the end of the URL
+    
+
+
+    myFirebaseRef.child("form").on("value", function(snapshot) {
+      var allFields = snapshot.val();
+      $.each(allFields, function(key, value) {
+        var fieldData = allFields[key];
+        console.log(fieldData);
+        
+        var inputArr = $('input');
+        $.each(inputArr, function(inputArrKey, inputArrValue) {
+          $(inputArrValue).attr('data-key', key);
+        });
+
+      });
+
+
+      // // var fieldReference = myFirebaseTaskListRef.child(key);
+      // if (typeof obj.inputVal !== 'undefined') {      
+      //   // keep value that was saved
+      //   $(obj.id).val(obj.inputVal);
+
+      //   // print value as a preview
+      //   $("#saved").text(obj.inputVal)
+      //   // Update address value
+      // }
+    });
+    // Save input values
+    $("#saveform").on("click", function() {
+      console.log("i was clicked");
+      var inputArr = $('input');
+      $.each(inputArr, function(inputArrKey, inputArrValue) {
+        var fieldKey = $(inputArrValue).attr('data-key');
+        var fieldVal = $(inputArrValue).val();
+        var fieldId = $(inputArrValue).attr('id');
+        if (typeof fieldKey !== 'undefined') {
+          console.log('update data because theres content');
+          var fieldReference = myFirebaseTaskListRef.child(fieldKey);
+          fieldReference.update({
+            "id" : fieldId,
+            "inputVal" : fieldVal
+          });
+        } else {
+          console.log('push data because im new');
+          myFirebaseTaskListRef.push({
+            "id" : fieldId,
+            "inputVal" : fieldVal
+          });
+        }
+        // grab the value of each input based on it's unique id/key 
+        // Update the corresponding value in the db
+      });
+      // var address = $('#address');
+      // var addressVal = address.val();
+      // var newField = {
+      //   id: '#' + address.attr('id'),
+      //   inputVal: addressVal
+      // };
+    });
+
+  </script>
+  </body>
+</html>
