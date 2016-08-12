@@ -43,27 +43,59 @@
 
   <script src="https://cdn.firebase.com/js/client/2.4.2/firebase.js"></script>
   <script>
+    function getArrayOfTasksSortedByCompleteness(unsortedObjectOfTasks) {
+        var arrayOfFinishedTasks = [];
+        var arrayOfUnfinishedTasks = [];
+
+        for (var key in unsortedObjectOfTasks) {
+          var value = unsortedObjectOfTasks[key];
+          var keyValuePair = [key, value];
+
+          var taskRecord = {
+            firebaseItemKey: keyValuePair[0],
+            taskData: keyValuePair[1]
+          };
+
+          if (value.status === 'complete') {
+            arrayOfFinishedTasks.push(taskRecord);
+          } else {
+            arrayOfUnfinishedTasks.push(taskRecord);
+          }
+        }
+
+        var finishedAndUnfinishedTasks = arrayOfUnfinishedTasks.concat(arrayOfFinishedTasks);
+
+        return finishedAndUnfinishedTasks;
+    }
+
+    function makeLiForTask(taskRecord) {
+      var li = $("<li></li>");
+      var status = '';
+      li.attr("data-task-key", taskRecord.firebaseItemKey);
+      li.attr("class", [taskRecord.taskData.status + ' ' + "list-group-item"]);
+      if (taskRecord.taskData.status === 'complete') {
+          status = 'checked';
+      }
+      li.html('<div class="inline-block" style="width:24px; vertical-align:top">' + '<input type="checkbox" class="change-status" style="margin-right:5px;"' + status + '>' + '</div>' + '<div class="inline-block" style="width:90%;">' + taskRecord.taskData.task + '<a href="#" class="delete-task" style="padding-top:3px; margin-left: 5px;"><i class="fa fa-trash"></i></a>' + '</div>');  
+
+      return li;
+    }
+
     // Initialize Firebase
-    var myFirebaseRef = new Firebase("firebase_URL"); // Replace firebase_URL your own
+    var myFirebaseRef = new Firebase("https://tasklist-af065.firebaseio.com/"); // Replace firebase_URL your own
     
     myFirebaseRef.child("tasks").on("value", function(snapshot) {
       var allTasks = snapshot.val();
       // Create a li for every task in the DB
       $("#content").html("");
-      $.each(allTasks, function(key, value) {
-        var taskData = allTasks[key];
-        var li = $("<li></li>");
-        var status = '';
-        $("#content").append(li);
-        li.attr("data-task-key", key);
-        li.attr("class", [taskData.status + ' ' + "list-group-item"]);
-        if (taskData.status === 'complete') {
-            status = 'checked';
-        }
-        li.html(function() {
-          return '<div class="inline-block" style="width:24px; vertical-align:top">' + '<input type="checkbox" class="change-status" style="margin-right:5px;"' + status + '>' + '</div>' + '<div class="inline-block" style="width:90%;">' + taskData.task + '<a href="#" class="delete-task" style="padding-top:3px; margin-left: 5px;"><i class="fa fa-trash"></i></a>' + '</div>';
-        });
-      });
+
+      var ulForTaskElements = $("#content");
+
+      ulForTaskElements.append(
+        getArrayOfTasksSortedByCompleteness(allTasks).map(makeLiForTask)
+      )
+      
+        
       // Update Status when clicking checkbox
       var changeStatus = $(".change-status");
       $.each(changeStatus, function(key, value) {
@@ -92,7 +124,7 @@
 
     });
     // write to database
-    var myFirebaseTaskListRef = new Firebase("firebase_URL/tasks"); // Replace firebase_URL with your own and keep /tasks at the end of the URL
+    var myFirebaseTaskListRef = new Firebase("https://tasklist-af065.firebaseio.com/tasks"); // Replace firebase_URL with your own and keep /tasks at the end of the URL
 
     var inputElement = $("#newTask");
 

@@ -27,8 +27,16 @@
               <form id="payment">
                 <h3>Form</h3>
                 <div>
-                  <label for="addresse">Address</label>
+                  <label for="address">Address</label>
                   <input type="text" id="address">
+                </div>
+                <div>
+                  <label for="city">City</label>
+                  <input type="text" id="city">
+                </div>
+                <div>
+                  <label for="zip">Zip</label>
+                  <input type="text" id="zip">
                 </div>
                 <button type="submit" id="saveform">Save</button>
                 <h3>Saved Info</h3>
@@ -49,62 +57,53 @@
     var myFirebaseTaskListRef = new Firebase("https://tasklist-af065.firebaseio.com/form"); // Replace firebase_URL with your own and keep /tasks at the end of the URL
     
 
-
+    // Display values from the DB in the DOM
     myFirebaseRef.child("form").on("value", function(snapshot) {
+
       var allFields = snapshot.val();
       $.each(allFields, function(key, value) {
         var fieldData = allFields[key];
-        console.log(fieldData);
-        
-        var inputArr = $('input');
-        $.each(inputArr, function(inputArrKey, inputArrValue) {
-          $(inputArrValue).attr('data-key', key);
+        // console.log(fieldData);
+        if (fieldData.inputVal.length > 0) {
+          console.log('field',fieldData.inputVal);
+          $("#saved").append('<div>' + fieldData.id + ':</div>' + fieldData.inputVal);
+          $("#" + fieldData.id).val(fieldData.inputVal);
+        }
+
+        $.each(fieldData, function(inputArrKey, inputArrValue) {
+          console.log('im adding a key to an input', key);
+          $("#" + fieldData.id).attr('data-key', key);
         });
 
       });
 
-
-      // // var fieldReference = myFirebaseTaskListRef.child(key);
-      // if (typeof obj.inputVal !== 'undefined') {      
-      //   // keep value that was saved
-      //   $(obj.id).val(obj.inputVal);
-
-      //   // print value as a preview
-      //   $("#saved").text(obj.inputVal)
-      //   // Update address value
-      // }
     });
-    // Save input values
+
+    // Save input values to DB
     $("#saveform").on("click", function() {
-      console.log("i was clicked");
       var inputArr = $('input');
       $.each(inputArr, function(inputArrKey, inputArrValue) {
         var fieldKey = $(inputArrValue).attr('data-key');
         var fieldVal = $(inputArrValue).val();
         var fieldId = $(inputArrValue).attr('id');
         if (typeof fieldKey !== 'undefined') {
-          console.log('update data because theres content');
+         
+          console.log('im updating');
           var fieldReference = myFirebaseTaskListRef.child(fieldKey);
           fieldReference.update({
             "id" : fieldId,
             "inputVal" : fieldVal
           });
         } else {
-          console.log('push data because im new');
+         console.log('im pushing');
           myFirebaseTaskListRef.push({
             "id" : fieldId,
             "inputVal" : fieldVal
           });
         }
-        // grab the value of each input based on it's unique id/key 
-        // Update the corresponding value in the db
+
       });
-      // var address = $('#address');
-      // var addressVal = address.val();
-      // var newField = {
-      //   id: '#' + address.attr('id'),
-      //   inputVal: addressVal
-      // };
+
     });
 
   </script>
