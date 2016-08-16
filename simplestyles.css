@@ -1,0 +1,24 @@
+/* Global */
+.body {
+	background-color: #efefef;
+}
+.inline-block {
+	display: inline-block;
+}
+.mtn {
+	margin-top:  0px;
+}
+.mbn {
+	margin-bottom:  0px;
+}
+
+/* Form */
+.saved-body {
+	background-color: #f9f9f9;
+}
+
+/* Task List */
+
+.complete {
+	background-color: #DFF0D8;
+}

@@ -8,41 +8,41 @@
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     <!-- Custom Styles -->
-    <style>
-      .complete {
-        background-color: #DFF0D8;
-      }
-      .inline-block {
-        display: inline-block;
-      }
-    </style>
+    <link rel="stylesheet" href="simplestyles.css">
   </head>
   <body>
 
     <div class="container-fluid">
         <div class="row">
           <div class="col-md-offset-4 col-md-4">
-            <div class="panel panel-default" style="margin-top:40px;">
-              
-              <form id="payment">
-                <h3>Form</h3>
-                <div>
-                  <label for="address">Address</label>
-                  <input type="text" id="address">
+            <div class="text-center">
+              <h1>Simple Form</h1>
+            </div>
+            <div class="panel panel-default" style="margin-top:20px;">
+              <div>
+                <form id="payment" class="panel-body mbn">
+                  <h3 class="mtn">Form</h3>
+                  <div class="form-group">
+                    <label for="address">Address</label>
+                    <input type="text" id="address" class="form-control">
+                  </div>
+                  <div class="form-group">
+                    <label for="city">City</label>
+                    <input type="text" id="city" class="form-control">
+                  </div>
+                  <div class="form-group">
+                    <label for="zip">Zip</label>
+                    <input type="text" id="zip" class="form-control">
+                  </div>
+                  <button type="submit" id="saveform" class="btn btn-primary pull-right">Save</button>
+                  <div class="clearfix"></div>
+                </form>
+                <hr class="mbn mtn">
+                <div class="panel-body saved-body">
+                  <h4 class="mtn">Saved Info</h4>
+                  <div id="saved"></div>
                 </div>
-                <div>
-                  <label for="city">City</label>
-                  <input type="text" id="city">
-                </div>
-                <div>
-                  <label for="zip">Zip</label>
-                  <input type="text" id="zip">
-                </div>
-                <button type="submit" id="saveform">Save</button>
-                <h3>Saved Info</h3>
-                <div id="saved"></div>
-              </form>
-              
+              </div>
             </div>
           </div>
         </div>
@@ -66,10 +66,9 @@
         // console.log(fieldData);
         if (fieldData.inputVal.length > 0) {
           console.log('field',fieldData.inputVal);
-          $("#saved").append('<div>' + fieldData.id + ':</div>' + fieldData.inputVal);
+          $("#saved").append('<div><span>' + fieldData.id + ': </span>' + fieldData.inputVal + '</div>');
           $("#" + fieldData.id).val(fieldData.inputVal);
         }
-
         $.each(fieldData, function(inputArrKey, inputArrValue) {
           console.log('im adding a key to an input', key);
           $("#" + fieldData.id).attr('data-key', key);
@@ -86,16 +85,15 @@
         var fieldKey = $(inputArrValue).attr('data-key');
         var fieldVal = $(inputArrValue).val();
         var fieldId = $(inputArrValue).attr('id');
-        if (typeof fieldKey !== 'undefined') {
-         
-          console.log('im updating');
+        if (typeof fieldKey !== 'undefined') { 
+        // console.log('im updating');
           var fieldReference = myFirebaseTaskListRef.child(fieldKey);
           fieldReference.update({
             "id" : fieldId,
             "inputVal" : fieldVal
           });
         } else {
-         console.log('im pushing');
+         // console.log('im pushing');
           myFirebaseTaskListRef.push({
             "id" : fieldId,
             "inputVal" : fieldVal
