@@ -78,7 +78,7 @@
     }
 
     // Initialize Firebase
-    var myFirebaseRef = new Firebase("https://tasklist-af065.firebaseio.com/"); // Replace firebase_URL your own
+    var myFirebaseRef = new Firebase("firebase_URL"); // Replace firebase_URL your own
     
     myFirebaseRef.child("tasks").on("value", function(snapshot) {
       var allTasks = snapshot.val();
@@ -120,7 +120,7 @@
 
     });
     // write to database
-    var myFirebaseTaskListRef = new Firebase("https://tasklist-af065.firebaseio.com/tasks"); // Replace firebase_URL with your own and keep /tasks at the end of the URL
+    var myFirebaseTaskListRef = new Firebase("firebase_URL/tasks"); // Replace firebase_URL with your own and keep /tasks at the end of the URL
 
     var inputElement = $("#newTask");
 
